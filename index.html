@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استبيان رضا العملاء - وكالة روز </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #fef3e8 0%, #fff5ed 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .survey-card {
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .rating-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border-radius: 40px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .rating-option:hover {
+            background: #fff0e6;
+            transform: translateY(-2px);
+        }
+        
+        .rating-option input:checked + span {
+            color: #f77416;
+            font-weight: bold;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .form-input {
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+        
+        .form-input:focus {
+            border-color: #f77416;
+            box-shadow: 0 0 0 3px rgba(247, 116, 22, 0.1);
+            outline: none;
+        }
+        
+        .error-border {
+            border-color: #ef4444 !important;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #f77416, #ff9a44);
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(247, 116, 22, 0.3);
+        }
+        
+        .toast-success {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 50px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+        
+        .toast-success.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .required:after {
+            content: "*";
+            color: #ef4444;
+            margin-right: 4px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .phone-hint {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+        
+        .social-option:hover .fab.fa-facebook { color: #1877f2; }
+        .social-option:hover .fab.fa-instagram { color: #e4405f; }
+        .social-option:hover .fab.fa-tiktok { color: #000000; }
+        .social-option:hover .fab.fa-snapchat-ghost { color: #fffc00; }
+        .social-option:hover .fab.fa-twitter { color: #1da1f2; }
+        .social-option:hover .fab.fa-google { color: #ea4335; }
+        .social-option:hover .fas.fa-map-marker-alt { color: #34a853; }
+        .social-option:hover .fas.fa-users { color: #f77416; }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border-radius: 40px;
+            transition: all 0.2s ease;
+        }
+        
+        .radio-option:hover {
+            background: #fff0e6;
+            transform: translateX(-3px);
+        }
+        
+        input[type="radio"] {
+            accent-color: #f77416;
+            width: 18px;
+            height: 18px;
+        }
+        
+        select {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="max-w-3xl mx-auto py-8">
+    <!-- Header -->
+    <div class="text-center mb-8 fade-in">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#f77416] to-[#ff9a44] shadow-lg mb-4">
+            <i class="fas fa-clipboard-list text-white text-3xl"></i>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">استبيان رضا العملاء</h1>
+        <p class="text-gray-500 max-w-md mx-auto">نهدف لتحسين خدماتنا وتقديم تجربة أفضل لعملائنا، رأيك يهمنا</p>
+        <div class="w-24 h-1 bg-gradient-to-r from-[#f77416] to-[#ff9a44] rounded-full mx-auto mt-4"></div>
+    </div>
+
+    <!-- Survey Form -->
+    <div class="survey-card p-6 md:p-8 fade-in" style="animation-delay: 0.1s">
+        <form id="surveyForm">
+            <!-- 1 - الاسم -->
+            <div class="mb-6">
+                <label class="block text-gray-800 font-bold mb-2 required">1. الاسم</label>
+                <div class="relative">
+                    <i class="fas fa-user absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="name" name="name" 
+                           class="form-input w-full pr-12 pl-4 py-3 rounded-xl border"
+                           placeholder="أدخل اسمك كاملاً" required>
+                </div>
+                <div id="error1" class="text-red-500 text-sm mt-1 hidden">الرجاء إدخال الاسم</div>
+            </div>
+
+            <!-- 2 - الجنسية -->
+            <div class="mb-6">
+                <label class="block text-gray-800 font-bold mb-2 required">2. الجنسية</label>
+                <div class="relative">
+                    <i class="fas fa-flag absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <select id="nationality" name="nationality" 
+                            class="form-input w-full pr-12 pl-4 py-3 rounded-xl border appearance-none bg-white" required>
+                        <option value="" disabled selected>-- اختر جنسيتك --</option>
+                        <option value="سعودي">🇸🇦 سعودي</option>
+                        <option value="مصري">🇪🇬 مصري</option>
+                        <option value="إماراتي">🇦🇪 إماراتي</option>
+                        <option value="كويتي">🇰🇼 كويتي</option>
+                        <option value="قطري">🇶🇦 قطري</option>
+                        <option value="بحريني">🇧🇭 بحريني</option>
+                        <option value="عماني">🇴🇲 عماني</option>
+                        <option value="أردني">🇯🇴 أردني</option>
+                        <option value="لبناني">🇱🇧 لبناني</option>
+                        <option value="فلسطيني">🇵🇸 فلسطيني</option>
+                        <option value="سوري">🇸🇾 سوري</option>
+                        <option value="عراقي">🇮🇶 عراقي</option>
+                        <option value="يمني">🇾🇪 يمني</option>
+                        <option value="سوداني">🇸🇩 سوداني</option>
+                        <option value="تونسي">🇹🇳 تونسي</option>
+                        <option value="جزائري">🇩🇿 جزائري</option>
+                        <option value="مغربي">🇲🇦 مغربي</option>
+                        <option value="ليبي">🇱🇾 ليبي</option>
+                        <option value="أخرى">🌍 أخرى</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                </div>
+                <div id="error2" class="text-red-500 text-sm mt-1 hidden">الرجاء اختيار جنسيتك</div>
+            </div>
+
+            <!-- 3 - المدينة -->
+            <div class="mb-6">
+                <label class="block text-gray-800 font-bold mb-2 required">3. المدينة</label>
+                <div class="relative">
+                    <i class="fas fa-city absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="city" name="city" 
+                           class="form-input w-full pr-12 pl-4 py-3 rounded-xl border"
+                           placeholder="مثال: جدة، الرياض، القاهرة، دبي" required>
+                </div>
+                <div id="error3" class="text-red-500 text-sm mt-1 hidden">الرجاء إدخال المدينة</div>
+            </div>
+
+            <!-- 4 - الرقم -->
+            <div class="mb-6">
+                <label class="block text-gray-800 font-bold mb-2 required">4. رقم الجوال</label>
+                <div class="relative">
+                    <i class="fas fa-phone absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="tel" id="phone" name="phone" 
+                           class="form-input w-full pr-12 pl-4 py-3 rounded-xl border"
+                           placeholder="مثال: 01210568977 أو +9665xxxxxxxx" required>
+                </div>
+                <div class="phone-hint">📱 يمكنك إدخال أي رقم من أي دولة</div>
+                <div id="error4" class="text-red-500 text-sm mt-1 hidden">الرجاء إدخال رقم الجوال</div>
+            </div>
+
+            <!-- 5 - كيف تعرفت علينا -->
+            <div class="mb-8">
+                <label class="block text-gray-800 font-bold mb-2 required">5. كيف تعرفت علينا؟</label>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <label class="radio-option social-option">
+                        <input type="radio" name="source" value="فيس بوك" required>
+                        <i class="fab fa-facebook text-blue-600"></i>
+                        <span>فيس بوك</span>
+                    </label>
+                    <label class="radio-option social-option">
+                        <input type="radio" name="source" value="انستقرام">
+                        <i class="fab fa-instagram text-pink-500"></i>
+                        <span>انستقرام</span>
+                    </label>
+                    <label class="radio-option social-option">
+                        <input type="radio" name="source" value="تيك توك">
+                        <i class="fab fa-tiktok"></i>
+                        <span>تيك توك</span>
+                    </label>
+                    <label class="radio-option social-option">
+                        <input type="radio" name="source" value="سناب شات">
+                        <i class="fab fa-snapchat-ghost text-yellow-500"></i>
+                        <span>سناب شات</span>
+                    </label>
+                    <label class="radio-option social-option">
+                        <input type="radio" name="source" value="تويتر (X)">
+                        <i class="fab fa-twitter text-blue-400"></i>
+                        <span>تويتر (X)</span>
+                    </label>
+                    <label class="radio-option social-option">
+                        <input type="radio" name="source" value="جوجل">
+                        <i class="fab fa-google text-red-500"></i>
+                        <span>جوجل</span>
+                    </label>
+                    <label class="radio-option social-option">
+                        <input type="radio" name="source" value="جوجل ماب">
+                        <i class="fas fa-map-marker-alt text-green-600"></i>
+                        <span>جوجل ماب</span>
+                    </label>
+                    <label class="radio-option social-option">
+                        <input type="radio" name="source" value="الأصدقاء أو الأقارب">
+                        <i class="fas fa-users text-orange-500"></i>
+                        <span>الأصدقاء أو الأقارب</span>
+                    </label>
+                </div>
+                <div id="error5" class="text-red-500 text-sm mt-1 hidden">الرجاء اختيار كيف تعرفت علينا</div>
+            </div>
+
+            <!-- 6 - تقييم التجربة بشكل عام -->
+            <div class="mb-8">
+                <label class="block text-gray-800 font-bold mb-3 required">6. كيف تقيم تجربتك بشكل عام مع الشركة؟</label>
+                <div class="radio-group">
+                    <label class="rating-option"><input type="radio" name="overall_exp" value="مقبول" required><span>مقبول</span></label>
+                    <label class="rating-option"><input type="radio" name="overall_exp" value="جيد"><span>جيد</span></label>
+                    <label class="rating-option"><input type="radio" name="overall_exp" value="جيد جدا"><span>جيد جداً</span></label>
+                    <label class="rating-option"><input type="radio" name="overall_exp" value="ممتازة"><span>ممتازة</span></label>
+                </div>
+                <div id="error6" class="text-red-500 text-sm mt-1 hidden">الرجاء تقييم تجربتك</div>
+            </div>
+
+            <!-- 7 - جودة الخدمات -->
+            <div class="mb-8">
+                <label class="block text-gray-800 font-bold mb-3 required">7. جودة الخدمات لدينا</label>
+                <div class="radio-group">
+                    <label class="rating-option"><input type="radio" name="quality" value="سريعة جدا" required><span>سريعة جداً</span></label>
+                    <label class="rating-option"><input type="radio" name="quality" value="سريعة"><span>سريعة</span></label>
+                    <label class="rating-option"><input type="radio" name="quality" value="متوسطة"><span>متوسطة</span></label>
+                    <label class="rating-option"><input type="radio" name="quality" value="بطيئة"><span>بطيئة</span></label>
+                    <label class="rating-option"><input type="radio" name="quality" value="بطيئة جدا"><span>بطيئة جداً</span></label>
+                </div>
+                <div id="error7" class="text-red-500 text-sm mt-1 hidden">الرجاء تقييم جودة الخدمات</div>
+            </div>
+
+            <!-- 8 - سرعة الرد على الاستفسارات -->
+            <div class="mb-8">
+                <label class="block text-gray-800 font-bold mb-3 required">8. كيف تقيم سرعة الرد على استفساراتك؟</label>
+                <div class="radio-group">
+                    <label class="rating-option"><input type="radio" name="response_speed" value="مقبول" required><span>مقبول</span></label>
+                    <label class="rating-option"><input type="radio" name="response_speed" value="جيد"><span>جيد</span></label>
+                    <label class="rating-option"><input type="radio" name="response_speed" value="جيد جدا"><span>جيد جداً</span></label>
+                    <label class="rating-option"><input type="radio" name="response_speed" value="ممتازة"><span>ممتازة</span></label>
+                </div>
+                <div id="error8" class="text-red-500 text-sm mt-1 hidden">الرجاء تقييم سرعة الرد</div>
+            </div>
+
+            <!-- 9 - هل الخدمة تستحق السعر -->
+            <div class="mb-8">
+                <label class="block text-gray-800 font-bold mb-3 required">9. هل ترى أن الخدمة تستحق السعر المدفوع؟</label>
+                <div class="radio-group">
+                    <label class="rating-option"><input type="radio" name="value_for_money" value="نعم مناسبة" required><span>نعم مناسبة</span></label>
+                    <label class="rating-option"><input type="radio" name="value_for_money" value="لا غير مناسبة وغالية"><span>لا غير مناسبة وغالية</span></label>
+                </div>
+                <div id="error9" class="text-red-500 text-sm mt-1 hidden">الرجاء اختيار إجابتك</div>
+            </div>
+
+            <!-- 10 - هل ستتعامل معنا مرة أخرى -->
+            <div class="mb-8">
+                <label class="block text-gray-800 font-bold mb-3 required">10. هل ستتعامل معنا مرة أخرى؟</label>
+                <div class="radio-group">
+                    <label class="rating-option"><input type="radio" name="will_return" value="نعم ستتعامل معكم" required><span>نعم ستتعامل معكم</span></label>
+                    <label class="rating-option"><input type="radio" name="will_return" value="ممكن اتعامل معكم"><span>ممكن اتعامل معكم</span></label>
+                    <label class="rating-option"><input type="radio" name="will_return" value="لا اتعامل معكم"><span>لا اتعامل معكم</span></label>
+                </div>
+                <div id="error10" class="text-red-500 text-sm mt-1 hidden">الرجاء اختيار إجابتك</div>
+            </div>
+
+            <!-- 11 - احتمالية الترشيح -->
+            <div class="mb-8">
+                <label class="block text-gray-800 font-bold mb-3 required">11. ما مدى احتمالية أن ترشح شركتنا لأصدقائك أو أحد الأقارب؟</label>
+                <div class="radio-group">
+                    <label class="rating-option"><input type="radio" name="recommend" value="ارشح احد" required><span>ارشح احد</span></label>
+                    <label class="rating-option"><input type="radio" name="recommend" value="لا ارشح احد"><span>لا ارشح احد</span></label>
+                </div>
+                <div id="error11" class="text-red-500 text-sm mt-1 hidden">الرجاء اختيار إجابتك</div>
+            </div>
+
+            <!-- زر الإرسال -->
+            <button type="submit" id="submitBtn" class="submit-btn w-full text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 text-lg">
+                <i class="fab fa-whatsapp"></i>
+                إرسال الاستبيان عبر واتساب
+                <i class="fas fa-paper-plane"></i>
+            </button>
+            
+            <p class="text-center text-gray-400 text-xs mt-4">
+                <i class="fas fa-lock"></i> سيتم إرسال بياناتك بشكل آمن عبر واتساب
+            </p>
+        </form>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast-success">
+    <i class="fas fa-check-circle ml-2"></i>
+    تم إرسال الاستبيان بنجاح! شكراً لك
+</div>
+
+<script>
+    const WHATSAPP_NUMBER = "201210568977";
+    
+    function validateForm() {
+        let isValid = true;
+        
+        const name = document.getElementById('name').value.trim();
+        if (!name) { document.getElementById('error1').classList.remove('hidden'); document.getElementById('name').classList.add('error-border'); isValid = false; }
+        else { document.getElementById('error1').classList.add('hidden'); document.getElementById('name').classList.remove('error-border'); }
+        
+        const nationality = document.getElementById('nationality').value;
+        if (!nationality) { document.getElementById('error2').classList.remove('hidden'); isValid = false; }
+        else { document.getElementById('error2').classList.add('hidden'); }
+        
+        const city = document.getElementById('city').value.trim();
+        if (!city) { document.getElementById('error3').classList.remove('hidden'); document.getElementById('city').classList.add('error-border'); isValid = false; }
+        else { document.getElementById('error3').classList.add('hidden'); document.getElementById('city').classList.remove('error-border'); }
+        
+        const phone = document.getElementById('phone').value.trim();
+        if (!phone) { document.getElementById('error4').classList.remove('hidden'); document.getElementById('phone').classList.add('error-border'); isValid = false; }
+        else { document.getElementById('error4').classList.add('hidden'); document.getElementById('phone').classList.remove('error-border'); }
+        
+        const source = document.querySelector('input[name="source"]:checked');
+        if (!source) { document.getElementById('error5').classList.remove('hidden'); isValid = false; }
+        else { document.getElementById('error5').classList.add('hidden'); }
+        
+        const overallExp = document.querySelector('input[name="overall_exp"]:checked');
+        if (!overallExp) { document.getElementById('error6').classList.remove('hidden'); isValid = false; }
+        else { document.getElementById('error6').classList.add('hidden'); }
+        
+        const quality = document.querySelector('input[name="quality"]:checked');
+        if (!quality) { document.getElementById('error7').classList.remove('hidden'); isValid = false; }
+        else { document.getElementById('error7').classList.add('hidden'); }
+        
+        const responseSpeed = document.querySelector('input[name="response_speed"]:checked');
+        if (!responseSpeed) { document.getElementById('error8').classList.remove('hidden'); isValid = false; }
+        else { document.getElementById('error8').classList.add('hidden'); }
+        
+        const valueForMoney = document.querySelector('input[name="value_for_money"]:checked');
+        if (!valueForMoney) { document.getElementById('error9').classList.remove('hidden'); isValid = false; }
+        else { document.getElementById('error9').classList.add('hidden'); }
+        
+        const willReturn = document.querySelector('input[name="will_return"]:checked');
+        if (!willReturn) { document.getElementById('error10').classList.remove('hidden'); isValid = false; }
+        else { document.getElementById('error10').classList.add('hidden'); }
+        
+        const recommend = document.querySelector('input[name="recommend"]:checked');
+        if (!recommend) { document.getElementById('error11').classList.remove('hidden'); isValid = false; }
+        else { document.getElementById('error11').classList.add('hidden'); }
+        
+        return isValid;
+    }
+    
+    // دالة لتحويل التقييمات إلى نصوص
+    function getRatingText(value, type) {
+        if (type === 'overall' || type === 'response') {
+            switch(value) {
+                case 'مقبول': return '⭐ مقبول';
+                case 'جيد': return '⭐⭐ جيد';
+                case 'جيد جدا': return '⭐⭐⭐ جيد جداً';
+                case 'ممتازة': return '⭐⭐⭐⭐ ممتازة';
+                default: return value;
+            }
+        }
+        if (type === 'quality') {
+            switch(value) {
+                case 'سريعة جدا': return '⚡ سريعة جداً';
+                case 'سريعة': return '✅ سريعة';
+                case 'متوسطة': return '⏱️ متوسطة';
+                case 'بطيئة': return '🐢 بطيئة';
+                case 'بطيئة جدا': return '🐌 بطيئة جداً';
+                default: return value;
+            }
+        }
+        return value;
+    }
+    
+    function collectFormData() {
+        const name = document.getElementById('name').value.trim();
+        const nationality = document.getElementById('nationality').value;
+        const city = document.getElementById('city').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const source = document.querySelector('input[name="source"]:checked')?.value || "";
+        const overallExp = document.querySelector('input[name="overall_exp"]:checked')?.value || "";
+        const quality = document.querySelector('input[name="quality"]:checked')?.value || "";
+        const responseSpeed = document.querySelector('input[name="response_speed"]:checked')?.value || "";
+        const valueForMoney = document.querySelector('input[name="value_for_money"]:checked')?.value || "";
+        const willReturn = document.querySelector('input[name="will_return"]:checked')?.value || "";
+        const recommend = document.querySelector('input[name="recommend"]:checked')?.value || "";
+        
+        const now = new Date();
+        const dateStr = `${now.toLocaleDateString('ar-EG')} - ${now.toLocaleTimeString('ar-EG')}`;
+        
+        // بناء رسالة الواتساب بالشكل المطلوب
+        const message = `📋 *استبيان رضا العملاء - وكالة روز *
+━ ━ ━ ━ ━ ━ ━ ━ ━
+👤 *الاسم:* ${name}
+🌍 *الجنسية:* ${nationality}
+🏙️ *المدينة:* ${city}
+📱 *الجوال:* ${phone}
+📅 *التاريخ:* ${dateStr}
+
+━ ━ ━ ━ ━ ━ ━ ━ ━
+*نتائج الاستبيان:*
+
+1️⃣ *كيف تعرفت علينا؟* ${source}
+2️⃣ *تقييم التجربة بشكل عام:* ${getRatingText(overallExp, 'overall')}
+3️⃣ *جودة الخدمات لدينا:* ${getRatingText(quality, 'quality')}
+4️⃣ *سرعة الرد على الاستفسارات:* ${getRatingText(responseSpeed, 'overall')}
+5️⃣ *الخدمة تستحق السعر المدفوع؟* ${valueForMoney}
+6️⃣ *هل ستتعامل معنا مرة أخرى؟* ${willReturn}
+7️⃣ *احتمالية الترشيح للأصدقاء:* ${recommend}
+
+━ ━ ━ ━ ━ ━ ━ ━ ━
+🙏 *شكراً لثقتك بنا*
+*وكالة روز  - للسفر والسياحة*`;
+        
+        return encodeURIComponent(message);
+    }
+    
+    function showToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+    
+    function sendToWhatsApp() {
+        const message = collectFormData();
+        const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+        window.open(whatsappUrl, '_blank');
+    }
+    
+    document.getElementById('surveyForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (validateForm()) {
+            sendToWhatsApp();
+            showToast();
+            setTimeout(() => {
+                document.getElementById('surveyForm').reset();
+            }, 2000);
+        }
+    });
+    
+    ['name', 'city', 'phone'].forEach(id => {
+        document.getElementById(id).addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('error-border');
+                document.getElementById(`error${id === 'name' ? '1' : id === 'city' ? '3' : '4'}`).classList.add('hidden');
+            }
+        });
+    });
+    
+    document.getElementById('nationality').addEventListener('change', function() {
+        if (this.value) document.getElementById('error2').classList.add('hidden');
+    });
+</script>
+
+</body>
+</html>
